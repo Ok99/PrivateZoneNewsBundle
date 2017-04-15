@@ -1,0 +1,77 @@
+{% extends app.request.xmlHttpRequest
+        ? 'DefaultBundle::layout_ajax.html.twig'
+        : 'DefaultBundle::layout.html.twig' %}
+
+{% block sonata_page_container %}
+    <div id="page-content">
+        <div class="c-newsfeed">
+            <div class="container">
+                <ul class="label-set label-set--newsfeed">
+                    <li><a class="label label--big label--dark arr{% if collection is empty %} act{% endif %}" href="{{ path('_page_alias_news') }}">{{ "View All"|trans({}, 'DefaultBundle') }}</a></li>
+                    {% for collection2 in collections %}
+                        <li><a class="label arr{% if collection == collection2 %} act{% endif %}" href="{{ path('_page_alias_news', { collection: collection2.slug }) }}">{{ collection2.name }}</a></li>
+                    {% endfor %}
+                </ul>
+
+                <div class="c-head c-newsfeed__header"><h1>News</h1></div>
+
+                <div class="c-newsfeed__feed js-masonry">
+                    <div class="gutter-sizer"></div>
+
+                    {% for post in pager.results if not collection or post.collection == collection %}
+                        {% if loop.index == 1 %}
+                            <div class="item item--big">
+                                <div class="image">
+                                    <img src="{% path post.image, 'abstract' %}">
+                                </div>
+                                <div class="content">
+                                    <p class="time">{{ post.publicationDateStart|format_date }}</p>
+                                    <h2>{{ post.title }}</h2>
+                                    <p class="text">{{ post.abstract }}</p>
+                                    <a class="read-more" href="{{ url('ok99_privatezone_news_view', { 'permalink': ok99_privatezone_news_permalink(post) }) }}">Celý článek</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="item">
+                                <div class="image">
+                                    <img src="{% path post.image, 'abstract' %}">
+                                </div>
+                                <div class="content">
+                                    <p class="time">{{ post.publicationDateStart|format_date }}</p>
+                                    <h2>{{ post.title }}</h2>
+                                    <p class="text">{{ post.abstract }}</p>
+                                    <a class="read-more" href="{{ url('ok99_privatezone_news_view', { 'permalink': ok99_privatezone_news_permalink(post) }) }}">Celý článek</a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    <div class="item">
+                        <div class="image">
+                            <img src="http://www.website.com/uploads/media/news/0001/02/thumb_1070_news_abstract.jpeg">
+                        </div>
+                        <div class="content">
+                            <p class="time">10. 10. 2014</p>
+                            <h2>Open space končí, nastupuje inovativní kancelářský koncept</h2>
+                            <p class="text">Koncept přináší větší míru využití kanceláří, menší podlahovou plochu, inspirativní prostředí pro týmovou i individuální práci a především udržitelnost.</p>
+                            <a class="read-more" href="http://www.website.com/cs/news/2014/10/10/open-space-kon-nastupuje-inovativn-kancelsk-koncept">Celý článek</a>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="image">
+                            <img src="http://www.website.com/uploads/media/news/0001/02/thumb_1069_news_abstract.jpeg">
+                        </div>
+                        <div class="content">
+                            <p class="time">10. 10. 2014</p>
+                            <h2>Firmy podceňují hledání sídla, najít kancelář trvá až rok</h2>
+                            <p class="text">Firmy, které hledají kancelář pro svůj byznys, často nevědí na co se zaměřit, aby vybrali tu nejlepší variantu pro svou společnost. Najít vhodné kanceláře se v široké nabídce realitních specialistů zdá být poměrně jednoduché. Realita ale bývá jiná.</p>
+                            <a class="read-more" href="http://www.website.com/cs/news/2014/10/10/firmy-podcenuji-hledani-sidla-najit-kancelar-trva-az-rok">Celý článek</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends app.request.xmlHttpRequest
+        ? 'DefaultBundle::layout_ajax.html.twig'
+        : 'DefaultBundle::layout.html.twig' %}
+
+{% block sonata_page_container %}
+    <div class="module_navigation top">
+        <div class="back pull-left">
+            <a href="{{ path('_page_alias_news') }}" class="back"><mark>{{ "Back"|trans({}, 'DefaultBundle') }}</mark> {{ "to other news"|trans({}, 'DefaultBundle') }}</a>
+        </div>
+        <div class="dropdown pull-right">
+            <a href="#" class="toggle">{{ "Topics"|trans({}, 'DefaultBundle') }}</a>
+        </div>
+    </div>
+    <div class="container">
+        <ul class="label-set" style="display:none">
+            <li><a class="label arr" href="">{{ "View All"|trans({}, 'DefaultBundle') }}</a></li>
+            {% for collection in collections %}
+                <li><a class="label arr{% if post.collection.id == collection.id %} act{% endif %}" href="{{ path('_page_alias_news', { collection: collection.slug }) }}">{{ collection.name }}</a></li>
+            {% endfor %}
+        </ul>
+        
+        <div class="page-detail-content">
+            <div class="module_navigation module_navigation--simple">
+                <div class="back">
+                    <a href="{{ path('_page_alias_news') }}" class="back"><mark>{{ "Back"|trans({}, 'DefaultBundle') }}</mark> {{ "to other news"|trans({}, 'DefaultBundle') }}</a>
+                </div>
+            </div>
+
+            <div class="meta-header">
+                <div>
+                    <span class="label label--angular"><strong>C</strong></span>
+                    <a class="label label--angular label--dark arr act" href="">{{ "View All"|trans({}, 'DefaultBundle') }}</a>
+                    <a class="label label--angular label--dark arr" href="">{{ "View All"|trans({}, 'DefaultBundle') }}</a>
+                </div>
+                <div class="meta">{{ post.publicationDateStart | format_date }}</div>
+            </div>
+            <div class="page-detail-content__right">
+                <figure>
+                    <img src="{% path post.image, 'abstract' %}" alt="">
+                </figure>
+            </div>
+            <div class="page-detail-content__left">
+                <h1 class="h2">{{ post.title }}</h1>
+                {{ post.content|raw }}
+            </div>
+        </div>
+    </div>
+{% endblock sonata_page_container %}

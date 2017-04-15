@@ -1,0 +1,107 @@
+<?php
+
+namespace Ok99\PrivateZoneCore\NewsBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="Post_translations", uniqueConstraints={
+ *    @ORM\UniqueConstraint(name="lookup_unique_idx", columns={"locale", "object_id"})
+ * })
+ */
+class PostTranslation
+{
+
+   /**
+    * @ORM\ManyToOne(targetEntity="Post", inversedBy="translations")
+    * @ORM\JoinColumn(name="post_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
+    */
+    protected $post;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $title;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $slug;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    protected $abstract;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    protected $content;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        $this->setSlug(Tag::slugify($title));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setAbstract($abstract)
+    {
+        $this->abstract = $abstract;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAbstract()
+    {
+        return $this->abstract;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+}

@@ -1,0 +1,21 @@
+services:
+    ok99.privatezone.news.admin.post:
+        class: Ok99\PrivateZoneCore\NewsBundle\Admin\PostAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Content, label: posts }
+        arguments: [null, Ok99\PrivateZoneCore\NewsBundle\Entity\Post, null]
+        calls:
+            - [setTranslationDomain, [%sonata.news.admin.post.translation_domain%]]
+            - [setPermalinkGenerator, [@ok99.privatezone.news.permalink.generator]]
+
+    ok99.privatezone.news.admin.post_has_image:
+        class: Ok99\PrivateZoneCore\NewsBundle\Admin\PostHasImageAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, audit: false, group: Content, label: posts_image }
+        arguments: [null, Ok99\PrivateZoneCore\NewsBundle\Entity\PostHasImage, null]
+
+    ok99.privatezone.news.admin.post_has_file:
+        class: Ok99\PrivateZoneCore\NewsBundle\Admin\PostHasFileAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, audit: false, group: Content, label: posts_file }
+        arguments: [null, Ok99\PrivateZoneCore\NewsBundle\Entity\PostHasFile, null]

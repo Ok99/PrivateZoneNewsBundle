@@ -1,0 +1,13 @@
+services:
+    ok99.privatezone.news.manager.post:
+        class: Ok99\PrivateZoneCore\NewsBundle\Entity\PostManager
+        arguments: [Ok99\PrivateZoneCore\NewsBundle\Entity\Post, @doctrine]
+
+    ok99.privatezone.news.permalink.generator:
+        class: Ok99\PrivateZoneCore\NewsBundle\Permalink\DatePermalink
+
+    ok99.privatezone.news.twig.extension:
+        class: Ok99\PrivateZoneCore\NewsBundle\Twig\Extension\NewsExtension
+        tags:
+            - { name: twig.extension }
+        arguments: [@router, @ok99.privatezone.news.permalink.generator]

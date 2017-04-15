@@ -1,0 +1,6 @@
+services:
+    ok99.privatezone.news.block.recent_posts:
+        class: Ok99\PrivateZoneCore\NewsBundle\Block\RecentPostsBlockService
+        tags:
+            - { name: sonata.block }
+        arguments: [ok99.privatezone.news.block.recent_posts, @templating, @ok99.privatezone.news.manager.post]
