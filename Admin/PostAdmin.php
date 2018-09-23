@@ -33,7 +33,7 @@ class PostAdmin extends BaseAdmin
             ->with('General', array(
                     'class' => 'col-md-8'
                 ))
-                ->add('translations', 'ok99_privatezone_translations', array(
+                ->add('translations', 'canabelle_cms_translations', array(
                     'translation_domain' => $this->translationDomain,
                     'label' => false,
                     'fields' => array(
