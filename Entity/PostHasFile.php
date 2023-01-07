@@ -6,8 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 
 /**
+ * @ORM\Table(name="news_has_file")
  * @ORM\Entity
- * @ORM\Table()
  */
 class PostHasFile
 {
@@ -28,13 +28,13 @@ class PostHasFile
 
     /**
      * @ORM\ManyToOne(targetEntity="Post", inversedBy="postHasFiles")
-     * @ORM\JoinColumn(name="post_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="post_id", referencedColumnName="id", nullable=true, onDelete="CASCADE")
      */
     protected $post;
 
     /**
      * @ORM\ManyToOne(targetEntity="Ok99\PrivateZoneCore\MediaBundle\Entity\Media", cascade={"persist"})
-     * @ORM\JoinColumn(name="media_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="media_id", referencedColumnName="id", nullable=true, onDelete="CASCADE")
      */
     protected $media;
 

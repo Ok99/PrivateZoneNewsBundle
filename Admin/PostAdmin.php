@@ -2,24 +2,50 @@
 
 namespace Ok99\PrivateZoneCore\NewsBundle\Admin;
 
+use Doctrine\ORM\QueryBuilder;
 use Ok99\PrivateZoneCore\AdminBundle\Admin\Admin as BaseAdmin;
+use Ok99\PrivateZoneCore\NewsBundle\Entity\Post;
+use Ok99\PrivateZoneCore\UserBundle\Entity\User;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
 
 class PostAdmin extends BaseAdmin
 {
-    protected $translationDomain = 'SonataNewsBundle';
+    public static $ROLE_ADMIN = 'ROLE_OK99_PRIVATEZONE_NEWS_ADMIN_POST_ADMIN';
+    public static $ROLE_EDITOR = 'ROLE_OK99_PRIVATEZONE_NEWS_ADMIN_POST_EDITOR';
+
+    protected $baseRouteName = 'admin_privatezonecore_news_post';
+
+    protected $baseRoutePattern = 'klub/aktuality';
+
+    public function getBatchActions()
+    {
+        $actions = parent::getBatchActions();
+        unset($actions['delete']);
+        return $actions;
+    }
+
+    protected function configureRoutes(RouteCollection $collection)
+    {
+        parent::configureRoutes($collection);
+
+        $collection->remove('show');
+        $collection->remove('export');
+        $collection->remove('acl');
+    }
 
     protected function configureShowFields(ShowMapper $showMapper)
     {
         $showMapper
-            ->add('enabled')
+            ->add('publishInternally')
+            ->add('publishOnWeb')
             ->add('title')
-            ->add('abstract')
+            ->add('perex')
             ->add('content', null, array('safe' => true))
         ;
     }
@@ -29,41 +55,66 @@ class PostAdmin extends BaseAdmin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
+        $clubConfigurationPool = $this->getConfigurationPool()->getContainer()->get('ok99.privatezone.club_configuration_pool');
+
         $formMapper
             ->with('General', array(
                     'class' => 'col-md-8'
                 ))
-                ->add('translations', 'ok99_privatezone_translations', array(
-                    'translation_domain' => $this->translationDomain,
-                    'label' => false,
-                    'fields' => array(
-                            'title' => array(),
-                            'abstract' => array(
-                                'field_type' => 'textarea',
-                                'attr' => array(
-                                    'rows' => '5',
-                                )
-                            ),
-                            'content' => array(
-                                'field_type' => 'ckeditor',
-                                'config_name' => 'news'
-                            ),
-                            'summary' => array(),
-                            'author' => array(),
-                            'authorTitle' => array(),
-                        ),
-                    'exclude_fields' => array('slug')
+                ->add('title', null, array(
+                    'required' => true,
+                ))
+                ->add('perex', 'textarea', array(
+                    'required' => true,
+                    'help' => 'form.help_perex',
+                    'attr' => [
+                        'rows' => '2',
+                    ]
+                ))
+                ->add('content', 'ckeditor', array(
+                    'config_name' => 'news',
+                    'required' => true,
                 ))
             ->end()
                 ->with('Options', array(
                         'class' => 'col-md-4'
+                    ));
+
+        if ($clubConfigurationPool->hasNewsPublishableOnWeb()) {
+            $formMapper
+                    ->add('publishOnWeb', null, array(
+                        'required' => false,
+                        'label' => 'form.label_publish_on_web',
                     ))
-                    ->add('enabled', null, array('required' => false))
+                    ->add('publishInternally', null, array(
+                        'required' => false,
+                        'label' => 'form.label_publish_internally',
+                    ));
+        } else {
+            $formMapper
+                    ->add('publishInternally', null, array(
+                        'required' => false,
+                        'label' => 'form.label_publish',
+                    ));
+        }
+
+            $formMapper
+                    ->add('publishDate', 'ok99_privatezone_type_datetime_picker', array(
+                        'required' => false,
+                        'dp_use_seconds' => false,
+                        'dp_side_by_side' => true,
+                        'format' => 'yyyy-MM-dd HH:mm',
+                        'label' => 'form.label_publish_date',
+                    ))
+
                     ->add('image', 'sonata_type_model_list', array('required' => false), array(
                         'placeholder' => 'No image selected',
                         'link_parameters' => array(
-                            'context' => 'news'
-                        )
+                            'context' => 'news',
+                            'category' => 13,
+                            'provider' => 'sonata.media.provider.image',
+                        ),
+                        'admin_code' => 'ok99.privatezone.media.admin.media',
                     ))
 
                     ->add('postHasImages', 'ok99_privatezone_type_media_collection', array(
@@ -83,18 +134,6 @@ class PostAdmin extends BaseAdmin
                     ), array(
                         'sortable' => 'position'
                     ))
-
-                    ->add('publicationDateStart', 'ok99_privatezone_type_datetime_picker', array(
-                        'dp_use_seconds' => false,
-                        'dp_side_by_side' => true,
-                        'format' => 'yyyy-MM-dd HH:mm'
-                    ))
-                    ->add('collection', 'sonata_type_model_list', array('required' => false), array(
-                        'placeholder' => 'No collection selected',
-                        'link_parameters' => array(
-                            'context' => 'news'
-                        )
-                    ))
                 ->end()
             ->end()
         ;
@@ -107,7 +146,8 @@ class PostAdmin extends BaseAdmin
     {
         $datagridMapper
             ->add('title')
-            ->add('enabled')
+            ->add('publishInternally')
+            ->add('publishOnWeb')
         ;
     }
 
@@ -118,34 +158,16 @@ class PostAdmin extends BaseAdmin
     {
         $listMapper
             ->add('custom', 'string', array('template' => 'Ok99PrivateZoneNewsBundle:Admin:list_post_custom.html.twig', 'label' => 'Post'))
-            ->add('publicationDateStart')
+            ->add('publishInternally')
+            ->add('publishOnWeb')
+            ->add('publishDate')
+            ->add('_action', 'actions', array(
+                'actions' => array(
+                    'edit' => array(),
+                    'delete' => array(),
+                )
+            ))
         ;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
-    {
-        if (!$childAdmin && !in_array($action, array('edit'))) {
-            return;
-        }
-
-        $admin = $this->isChild() ? $this->getParent() : $this;
-
-        $id = $admin->getRequest()->get('id');
-
-        $menu->addChild(
-            $this->trans('sidemenu.link_edit_post', array(), 'SonataNewsBundle'),
-            array('uri' => $admin->generateUrl('edit', array('id' => $id)))
-        );
-
-        if ($this->hasSubject() && $this->getSubject()->getId() !== null) {
-            $menu->addChild(
-                $this->trans('sidemenu.link_view_post'),
-                array('uri' => $admin->getRouteGenerator()->generate('sonata_news_view', array('permalink' => $this->permalinkGenerator->generate($this->getSubject()))))
-            );
-        }
     }
 
     /**
@@ -157,17 +179,89 @@ class PostAdmin extends BaseAdmin
     }
 
     /**
+     * @inheritdoc
+     */
+    public function createQuery($context = 'list')
+    {
+        /** @var QueryBuilder $query */
+        $query = parent::createQuery($context);
+
+        if (
+            !$this->isGranted(self::$ROLE_ADMIN) &&
+            !$this->isGranted('ROLE_SUPER_ADMIN')
+        ) {
+            $user = $this->getConfigurationPool()->getContainer()->get('security.token_storage')->getToken()->getUser();
+            $query
+                ->andWhere($query->getRootAlias() . '.createdBy = :user')
+                ->setParameter('user', $user)
+            ;
+        }
+
+        return $query;
+    }
+
+    public function isAdmin($object = null)
+    {
+        return
+            $this->isGranted('ROLE_SUPER_ADMIN') ||
+            $this->isGranted(self::$ROLE_ADMIN) ||
+            ($object ? $this->isGranted('ADMIN', $object) : $this->isGranted('ADMIN'));
+    }
+
+    /**
      * {@inheritdoc}
+     * @var Post $object
+     */
+    public function isGranted($name, $object = null)
+    {
+        $isAdmin = false;
+
+        switch($name) {
+            case 'ROLE_SUPER_ADMIN':
+                break;
+            default:
+                $isAdmin =
+                    (!$object && parent::isGranted('ADMIN'))
+                    ||
+                    ($object && parent::isGranted('ADMIN', $object))
+                    ||
+                    parent::isGranted(self::$ROLE_ADMIN)
+                    ||
+                    parent::isGranted('ROLE_SUPER_ADMIN');
+
+                if ($isAdmin) {
+                    return true;
+                }
+        }
+
+        if (!is_null($object) && !$isAdmin) {
+            $user = $this->getConfigurationPool()->getContainer()->get('security.token_storage')->getToken()->getUser();
+            if (
+                $object->getCreatedBy() === null ||
+                $user->getId() == $object->getCreatedBy()->getId()
+            ) {
+                return true;
+            }
+        }
+
+        if ($isAdmin && in_array(is_string($name) ? strtoupper($name) : $name, array('EDIT','DELETE'))) {
+            return true;
+        }
+
+        return parent::isGranted($name, $object);
+    }
+
+    /**
+     * @param \Ok99\PrivateZoneCore\NewsBundle\Entity\Post $object
+     * @return void
      */
     public function prePersist($object)
     {
         parent::prePersist($object);
 
-        $translations = $object->getTranslations();
-
-        foreach ($translations as $trans) {
-            $trans->setObject($object);
-        }
+        /** @var User $user */
+        $user = $this->getConfigurationPool()->getContainer()->get('security.token_storage')->getToken()->getUser();
+        $object->setCreatedBy($user);
 
         foreach ($object->getPostHasImages() as $phi) {
             $phi->setPost($object);
@@ -183,18 +277,16 @@ class PostAdmin extends BaseAdmin
      */
 
     /**
-     * @param \Ok99\PrivateZoneCore\PageBundle\Entity\Block $object
-     * @return mixed|void
+     * @param \Ok99\PrivateZoneCore\NewsBundle\Entity\Post $object
+     * @return void
      */
     public function preUpdate($object)
     {
         parent::preUpdate($object);
 
-        $translations = $object->getTranslations();
-
-        foreach ($translations as $trans) {
-            $trans->setObject($object);
-        }
+        /** @var User $user */
+        $user = $this->getConfigurationPool()->getContainer()->get('security.token_storage')->getToken()->getUser();
+        $object->setUpdatedBy($user);
 
         foreach ($object->getPostHasImages() as $phi) {
             $phi->setPost($object);

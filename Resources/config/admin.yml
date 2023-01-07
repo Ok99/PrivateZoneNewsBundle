@@ -3,10 +3,11 @@ services:
         class: Ok99\PrivateZoneCore\NewsBundle\Admin\PostAdmin
         tags:
             - { name: sonata.admin, manager_type: orm, group: Content, label: posts }
-        arguments: [null, Ok99\PrivateZoneCore\NewsBundle\Entity\Post, null]
+        arguments: [null, Ok99\PrivateZoneCore\NewsBundle\Entity\Post, Ok99PrivateZoneNewsBundle:PostAdmin ]
         calls:
             - [setTranslationDomain, [%sonata.news.admin.post.translation_domain%]]
             - [setPermalinkGenerator, [@ok99.privatezone.news.permalink.generator]]
+            - [setTemplate, [edit, Ok99PrivateZoneNewsBundle:Post:edit.html.twig]]
 
     ok99.privatezone.news.admin.post_has_image:
         class: Ok99\PrivateZoneCore\NewsBundle\Admin\PostHasImageAdmin

@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="cs" datatype="plaintext" original="SonataNewsBundle.en.xliff">
         <body>
+            <trans-unit id="Action">
+                <source>Action</source>
+                <target></target>
+            </trans-unit>
             <trans-unit id="title_archive">
                 <source>title_archive</source>
                 <target>Archív</target>
@@ -139,9 +143,17 @@ Rychlé odkazy na moderování
                 <source>list.label_collection</source>
                 <target>Kolekce</target>
             </trans-unit>
-            <trans-unit id="list_label_enabled">
-                <source>list.label_enabled</source>
-                <target>Povolený</target>
+            <trans-unit id="list_label_publish">
+                <source>list.label_publish</source>
+                <target>Publikováno</target>
+            </trans-unit>
+            <trans-unit id="list_label_publish_internally">
+                <source>list.label_publish_internally</source>
+                <target>Publikováno v privátní zóně</target>
+            </trans-unit>
+            <trans-unit id="list_label_publish_on_web">
+                <source>list.label_publish_on_web</source>
+                <target>Publikováno na webu</target>
             </trans-unit>
             <trans-unit id="list_label_label_tags">
                 <source>list.label_tags</source>
@@ -155,13 +167,29 @@ Rychlé odkazy na moderování
                 <source>list.label_comments_count</source>
                 <target>Comment count</target>
             </trans-unit>
-            <trans-unit id="list.label_publication_date_start">
-                <source>list.label_publication_date_start</source>
-                <target>list.label_publication_date_start</target>
+            <trans-unit id="list.label_publish_date">
+                <source>list.label_publish_date</source>
+                <target>list.label_publish_date</target>
             </trans-unit>
-            <trans-unit id="form_label_enabled">
-                <source>form.label_enabled</source>
-                <target>Povolený</target>
+            <trans-unit id="form_label_publish">
+                <source>form.label_publish</source>
+                <target>Publikovat</target>
+            </trans-unit>
+            <trans-unit id="Publish Internally">
+                <source>Publish Internally</source>
+                <target>Publikovat v privátní zóně</target>
+            </trans-unit>
+            <trans-unit id="form_label_publish_internally">
+                <source>form.label_publish_internally</source>
+                <target>Publikovat v privátní zóně</target>
+            </trans-unit>
+            <trans-unit id="Publish On Web">
+                <source>Publish On Web</source>
+                <target>Publikovat na webu</target>
+            </trans-unit>
+            <trans-unit id="form_label_publish_on_web">
+                <source>form.label_publish_on_web</source>
+                <target>Publikovat na webu</target>
             </trans-unit>
             <trans-unit id="form_label_author">
                 <source>form.label_author</source>
@@ -175,21 +203,25 @@ Rychlé odkazy na moderování
                 <source>form.label_title</source>
                 <target>Název</target>
             </trans-unit>
-            <trans-unit id="form_label_abstract">
-                <source>form.label_abstract</source>
-                <target>Přehled</target>
+            <trans-unit id="form_label_perex">
+                <source>form.label_perex</source>
+                <target>Perex</target>
+            </trans-unit>
+            <trans-unit id="form_help_perex">
+                <source>form.help_perex</source>
+                <target>Zobrazí se ve výpisu aktualit a jako úvodní odstavec v detailu článku</target>
             </trans-unit>
             <trans-unit id="form_label_content">
                 <source>form.label_content</source>
-                <target>Obsah</target>
+                <target>Obsah článku</target>
             </trans-unit>
             <trans-unit id="form_label_tags">
                 <source>form.label_tags</source>
                 <target>Tagy</target>
             </trans-unit>
-            <trans-unit id="form_label_publication_date_start">
-                <source>form.label_publication_date_start</source>
-                <target>Datum publikování</target>
+            <trans-unit id="form_label_publish_date">
+                <source>form.label_publish_date</source>
+                <target>Termín vypublikování</target>
             </trans-unit>
             <trans-unit id="form_label_comments_close_at">
                 <source>form.label_comments_close_at</source>
@@ -207,9 +239,17 @@ Rychlé odkazy na moderování
                 <source>filter.label_title</source>
                 <target>Název</target>
             </trans-unit>
-            <trans-unit id="filter_label_enabled">
-                <source>filter.label_enabled</source>
-                <target>Povolený</target>
+            <trans-unit id="filter_label_publish">
+                <source>filter.label_publish</source>
+                <target>Publikováno</target>
+            </trans-unit>
+            <trans-unit id="filter_label_publish_internally">
+                <source>filter.label_publish_internally</source>
+                <target>Publikováno v privátní zóně</target>
+            </trans-unit>
+            <trans-unit id="filter_label_publish_on_web">
+                <source>filter.label_publish_on_web</source>
+                <target>Publikováno na webu</target>
             </trans-unit>
             <trans-unit id="filter_label_tags">
                 <source>filter.label_tags</source>
@@ -339,6 +379,10 @@ Rychlé odkazy na moderování
                 <source>form.comment.message</source>
                 <target>Zpráva</target>
             </trans-unit>
+            <trans-unit id="form.not_published">
+                <source>form.not_published</source>
+                <target>Článek není nikde publikovaný</target>
+            </trans-unit>
             <trans-unit id="view_all_posts">
                 <source>view_all_posts</source>
                 <target>Zobrazit aktuality</target>
@@ -391,13 +435,13 @@ Rychlé odkazy na moderování
                 <source>sidemenu.link_edit_post</source>
                 <target>Aktualita</target>
             </trans-unit>
-            <trans-unit id="Images">
-                <source>Images</source>
-                <target>Obrázky</target>
-            </trans-unit>
             <trans-unit id="Image">
                 <source>Image</source>
-                <target>Obrázek</target>
+                <target>Ilustrační fotka</target>
+            </trans-unit>
+            <trans-unit id="Images">
+                <source>Images</source>
+                <target>Galerie</target>
             </trans-unit>
             <trans-unit id="Files">
                 <source>Files</source>
@@ -411,8 +455,8 @@ Rychlé odkazy na moderování
                 <source>Collection</source>
                 <target>Kolekce</target>
             </trans-unit>
-            <trans-unit id="Publication Date Start">
-                <source>Publication Date Start</source>
+            <trans-unit id="Publish Date">
+                <source>Publish Date</source>
                 <target>Začátek publikace</target>
             </trans-unit>
             <trans-unit id="Options">
@@ -427,13 +471,13 @@ Rychlé odkazy na moderování
                 <source>Title</source>
                 <target>Titulek</target>
             </trans-unit>
-            <trans-unit id="Abstract">
-                <source>Abstract</source>
-                <target>Abstrakt</target>
+            <trans-unit id="Perex">
+                <source>Perex</source>
+                <target>Perex</target>
             </trans-unit>
             <trans-unit id="Content">
                 <source>Content</source>
-                <target>Obsah</target>
+                <target>Obsah článku</target>
             </trans-unit>
             <trans-unit id="Summary">
                 <source>Summary</source>

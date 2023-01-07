@@ -20,7 +20,12 @@ class PostHasImageAdmin extends BaseAdmin
             ->with($this->trans('form_post_has_media.group_main_label'))
             ->add('media', 'ok99_privatezone_type_image', array(), array(
                 'placeholder' => 'No image selected',
-                'link_parameters' => array('context' => 'news'),
+                'link_parameters' => array(
+                    'context' => 'news',
+                    'category' => 13,
+                    'provider' => 'sonata.media.provider.image',
+                ),
+                'admin_code' => 'ok99.privatezone.media.admin.media',
             ))
             ->add('position', 'hidden')
             ->end();

@@ -63,7 +63,8 @@ class PostManager extends BaseEntityManager
      * {@inheritdoc}
      *
      * Valid criteria are:
-     *    enabled - boolean
+     *    publishInternally - boolean
+     *    publishOnWeb - boolean
      *    date - query
      *    author - 'NULL', 'NOT NULL', id, array of ids
      *    mode - string public|admin
@@ -78,14 +79,22 @@ class PostManager extends BaseEntityManager
         $query = $this->getRepository()
             ->createQueryBuilder('p')
             ->select('p')
-            ->orderBy('p.publicationDateStart', 'DESC');
+            ->orderBy('p.publisDate', 'DESC');
 
-        if (!isset($criteria['enabled']) && $criteria['mode'] == 'public') {
-            $criteria['enabled'] = true;
+        if (!isset($criteria['publishInternally']) && $criteria['mode'] == 'public') {
+            $criteria['publishInternally'] = true;
         }
-        if (isset($criteria['enabled'])) {
-            $query->andWhere('p.enabled = :enabled');
-            $parameters['enabled'] = $criteria['enabled'];
+        if (isset($criteria['publishInternally'])) {
+            $query->andWhere('p.publishInternally = :publishInternally');
+            $parameters['publishInternally'] = $criteria['publishInternally'] ?? false;
+        }
+
+        if (!isset($criteria['publishOnWeb']) && $criteria['mode'] == 'public') {
+            $criteria['publishOnWeb'] = true;
+        }
+        if (isset($criteria['publishOnWeb'])) {
+            $query->andWhere('p.publishOnWeb = :publishOnWeb');
+            $parameters['publishOnWeb'] = $criteria['publishOnWeb'] ?? false;
         }
 
         if (isset($criteria['date']) && isset($criteria['date']['query']) && isset($criteria['date']['params'])) {

@@ -4,11 +4,13 @@ namespace Ok99\PrivateZoneCore\NewsBundle\Entity;
 
 use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
+use Ok99\PrivateZoneCore\UserBundle\Entity\User;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Sonata\ClassificationBundle\Model\CollectionInterface;
 
 /**
+ * @ORM\Table(name="news")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  */
@@ -22,75 +24,76 @@ class Post
     protected $id;
 
     /**
-     * @Gedmo\Translatable
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
      */
     protected $title;
 
     /**
-     * @Gedmo\Translatable
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="text")
+     * @Assert\NotBlank
      */
-    protected $abstract;
+    protected $perex;
 
     /**
-     * @Gedmo\Translatable
      * @ORM\Column(type="text")
+     * @Assert\NotBlank
      */
     protected $content;
 
     /**
-     * @Gedmo\Translatable
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $slug;
 
     /**
-     * @Gedmo\Translatable
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="publish_internally", type="boolean")
      */
-    protected $summary;
+    protected $publishInternally = false;
 
     /**
-     * @Gedmo\Translatable
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="publish_on_web", type="boolean")
      */
-    protected $author;
+    protected $publishOnWeb = false;
 
     /**
-     * @Gedmo\Translatable
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="publish_date", type="datetime", nullable=true)
      */
-    protected $authorTitle;
+    protected $publishDate;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    protected $enabled = true;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    protected $publicationDateStart;
-
-    /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(name="created_at", type="datetime")
      * @Gedmo\Timestampable(on="create")
      */
     protected $createdAt;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @var integer
+     *
+     * @ORM\ManyToOne(targetEntity="Ok99\PrivateZoneCore\UserBundle\Entity\User")
+     * @ORM\JoinColumn(name="created_by_id", referencedColumnName="id", onDelete="RESTRICT", nullable=false)
+     */
+    private $createdBy;
+
+    /**
+     * @ORM\Column(name="updated_at", type="datetime")
      * @Gedmo\Timestampable(on="update")
      */
     protected $updatedAt;
+
+    /**
+     * @var integer
+     *
+     * @ORM\ManyToOne(targetEntity="Ok99\PrivateZoneCore\UserBundle\Entity\User")
+     * @ORM\JoinColumn(name="updated_by_id", referencedColumnName="id", onDelete="SET NULL", nullable=true)
+     */
+    private $updatedBy;
 
     /**
      * @ORM\ManyToOne(targetEntity="Ok99\PrivateZoneCore\MediaBundle\Entity\Media", cascade={"remove","persist","refresh","merge","detach"})
      * @ORM\JoinColumn(name="image_id", referencedColumnName="id", nullable=true)
      */
     protected $image;
-
 
     /**
      * @ORM\OrderBy({"position" = "ASC"})
@@ -104,17 +107,18 @@ class Post
      */
     protected $postHasFiles;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Ok99\PrivateZoneCore\ClassificationBundle\Entity\Collection", cascade={"persist"})
-     * @ORM\JoinColumn(name="collection_id", referencedColumnName="id", nullable=true)
-     */
-    protected $collection;
 
-    /**
-     * @ORM\OneToMany(targetEntity="PostTranslation", mappedBy="object", indexBy="locale", cascade={"all"}, orphanRemoval=true)
-     * @Assert\Valid
-     */
-    private $translations;
+    public function __construct()
+    {
+        $this->postHasImages = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->postHasFiles = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setPublishDate(new \DateTime);
+    }
+
+    public function __toString()
+    {
+        return $this->getTitle();
+    }
 
     /**
      * Get id
@@ -124,14 +128,6 @@ class Post
     public function getId()
     {
         return $this->id;
-    }
-
-    public function __construct()
-    {
-        $this->postHasImages = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->postHasFiles = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->translations = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->setPublicationDateStart(new \DateTime);
     }
 
     /**
@@ -156,17 +152,17 @@ class Post
     /**
      * {@inheritdoc}
      */
-    public function setAbstract($abstract)
+    public function setPerex($perex)
     {
-        $this->abstract = $abstract;
+        $this->perex = $perex;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getAbstract()
+    public function getPerex()
     {
-        return $this->abstract;
+        return $this->perex;
     }
 
     /**
@@ -206,8 +202,8 @@ class Post
      */
     public function prePersist()
     {
-        if (!$this->getPublicationDateStart()) {
-            $this->setPublicationDateStart(new \DateTime);
+        if (!$this->getPublishDate()) {
+            $this->setPublishDate(new \DateTime);
         }
     }
 
@@ -216,55 +212,78 @@ class Post
      */
     public function preUpdate()
     {
-        if (!$this->getPublicationDateStart()) {
-            $this->setPublicationDateStart(new \DateTime);
+        if (!$this->getPublishDate()) {
+            $this->setPublishDate(new \DateTime);
         }
     }
 
     /**
-     * Set enabled
+     * Set publishInternally
      *
-     * @param boolean $enabled
+     * @param boolean $publishInternally
      * @return Post
      */
-    public function setEnabled($enabled)
+    public function setPublishInternally($publishInternally)
     {
-        $this->enabled = $enabled;
+        $this->publishInternally = $publishInternally;
 
         return $this;
     }
 
     /**
-     * Get enabled
+     * Get publishInternally
      *
      * @return boolean
      */
-    public function getEnabled()
+    public function getPublishInternally()
     {
-        return $this->enabled;
+        return $this->publishInternally;
     }
 
     /**
-     * Set publicationDateStart
+     * Set publishOnWeb
      *
-     * @param \DateTime $publicationDateStart
+     * @param boolean $publishOnWeb
      * @return Post
      */
-    public function setPublicationDateStart(\DateTime $publicationDateStart = null)
+    public function setPublishOnWeb($publishOnWeb)
     {
-        $this->publicationDateStart = $publicationDateStart;
+        $this->publishOnWeb = $publishOnWeb;
 
         return $this;
     }
 
     /**
-     * Get publicationDateStart
+     * Get publishOnWeb
+     *
+     * @return boolean
+     */
+    public function getPublishOnWeb()
+    {
+        return $this->publishOnWeb;
+    }
+
+    /**
+     * Set publishDate
+     *
+     * @param \DateTime $publishDate
+     * @return Post
+     */
+    public function setPublishDate(\DateTime $publishDate = null)
+    {
+        $this->publishDate = $publishDate;
+
+        return $this;
+    }
+
+    /**
+     * Get publishDate
      *
      * @return \DateTime
      */
-    public function getPublicationDateStart()
+    public function getPublishDate()
     {
-        return $this->publicationDateStart;
+        return $this->publishDate;
     }
 
     /**
@@ -275,6 +294,29 @@ class Post
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Set createdBy
+     *
+     * @param User $createdBy
+     * @return Post
+     */
+    public function setCreatedBy(User $createdBy)
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * Get createdBy
+     *
+     * @return User|int
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
     }
 
     /**
@@ -298,6 +340,29 @@ class Post
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set updatedBy
+     *
+     * @param User|null $updatedBy
+     * @return Post
+     */
+    public function setUpdatedBy(?User $updatedBy)
+    {
+        $this->updatedBy = $updatedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedBy
+     *
+     * @return User|int
+     */
+    public function getUpdatedBy()
+    {
+        return $this->updatedBy;
     }
 
     /**
@@ -326,25 +391,9 @@ class Post
     /**
      * {@inheritdoc}
      */
-    public function setCollection(CollectionInterface $collection = null)
-    {
-        $this->collection = $collection;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCollection()
-    {
-        return $this->collection;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getYear()
     {
-        return $this->getPublicationDateStart()->format('Y');
+        return $this->getPublishDate()->format('Y');
     }
 
     /**
@@ -352,7 +401,7 @@ class Post
      */
     public function getMonth()
     {
-        return $this->getPublicationDateStart()->format('m');
+        return $this->getPublishDate()->format('m');
     }
 
     /**
@@ -360,104 +409,7 @@ class Post
      */
     public function getDay()
     {
-        return $this->getPublicationDateStart()->format('d');
-    }
-
-    public function getTranslations()
-    {
-        return $this->translations;
-    }
-
-    public function addTranslation(PostTranslation $translation)
-    {
-        if (!$this->translations->contains($translation)) {
-            $this->translations[] = $translation;
-            $translation->setObject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTranslation(PostTranslation $translation)
-    {
-        if ($this->translations->contains($translation)) {
-            $this->translations->removeElement($translation);
-        }
-        return $this;
-    }
-
-    public function __toString()
-    {
-        return $this->getTitle();
-    }
-
-    /**
-     * Set summary
-     *
-     * @param string $summary
-     * @return Post
-     */
-    public function setSummary($summary)
-    {
-        $this->summary = $summary;
-
-        return $this;
-    }
-
-    /**
-     * Get summary
-     *
-     * @return string 
-     */
-    public function getSummary()
-    {
-        return $this->summary;
-    }
-
-    /**
-     * Set author
-     *
-     * @param string $author
-     * @return Post
-     */
-    public function setAuthor($author)
-    {
-        $this->author = $author;
-
-        return $this;
-    }
-
-    /**
-     * Get author
-     *
-     * @return string 
-     */
-    public function getAuthor()
-    {
-        return $this->author;
-    }
-
-    /**
-     * Set authorTitle
-     *
-     * @param string $authorTitle
-     * @return Post
-     */
-    public function setAuthorTitle($authorTitle)
-    {
-        $this->authorTitle = $authorTitle;
-
-        return $this;
-    }
-
-    /**
-     * Get authorTitle
-     *
-     * @return string 
-     */
-    public function getAuthorTitle()
-    {
-        return $this->authorTitle;
+        return $this->getPublishDate()->format('d');
     }
 
     /**

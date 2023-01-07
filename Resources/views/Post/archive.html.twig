@@ -27,7 +27,7 @@
                                 <div class="content">
                                     <p class="time">{{ post.publicationDateStart|format_date }}</p>
                                     <h2>{{ post.title }}</h2>
-                                    <p class="text">{{ post.abstract }}</p>
+                                    <p class="text">{{ post.perex }}</p>
                                     <a class="read-more" href="{{ url('ok99_privatezone_news_view', { 'permalink': ok99_privatezone_news_permalink(post) }) }}">Celý článek</a>
                                 </div>
                             </div>
@@ -39,7 +39,7 @@
                                 <div class="content">
                                     <p class="time">{{ post.publicationDateStart|format_date }}</p>
                                     <h2>{{ post.title }}</h2>
-                                    <p class="text">{{ post.abstract }}</p>
+                                    <p class="text">{{ post.perex }}</p>
                                     <a class="read-more" href="{{ url('ok99_privatezone_news_view', { 'permalink': ok99_privatezone_news_permalink(post) }) }}">Celý článek</a>
                                 </div>
                             </div>
