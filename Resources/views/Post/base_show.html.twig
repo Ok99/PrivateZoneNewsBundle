@@ -1,0 +1,77 @@
+{% extends 'Ok99PrivateZoneBundle:CRUD:base_show.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/ok99privatezone/js/jquery.fancybox.min.js') }}"></script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bundles/ok99privatezone/css/jquery.fancybox.min.css') }}" />
+{% endblock %}
+
+{% block navbar_title %}
+    {{ object.title }}
+{% endblock %}
+
+{% block show_title %}
+{% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+{% block show %}
+    <div class="sonata-ba-view">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="box box-primary">
+                    <div class="box-body">
+                        <p class="text-muted text-center">{{ object.perex }}</p>
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <b><i class="fa fa-calendar margin-r-5"></i> Datum</b>
+                                <a class="pull-right">{{ object.publishDate|date('j. n. Y H:i') }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b><i class="fa fa-user margin-r-5"></i> Autor</b>
+                                <a class="pull-right" href="{{ path('admin_privatezonecore_user_address_book_show', { 'id': object.createdBy.id }) }}">{{ object.createdBy.name }}</a>
+                            </li>
+                            {% if object.postHasFiles|length > 0 %}
+                                {% for postHasFile in object.postHasFiles %}
+                                    <li class="list-group-item">
+                                        <b><i class="fa fa-file margin-r-5"></i> Příloha</b>
+                                        <a class="pull-right" href="{{ path('sonata_media_download', {'id': postHasFile.media.id}) }}">{{ postHasFile.media.name }}</a>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                        {% if object.postHasImages|length > 0 %}
+                            {% for postHasImage in object.postHasImages %}
+                                {% set thumbWidth = not postHasImage.media.width or postHasImage.media.height > postHasImage.media.width ? 10000 : 200 %}
+                                {% set thumbHeight = not postHasImage.media.width or postHasImage.media.height > postHasImage.media.width ? 200 : 10000 %}
+
+                                <div class="col-sm-6 margin-bottom advert--attachment_wrapper">
+                                    <a data-fancybox="post_{{ object.id }}" href="{% path postHasImage.media, 'reference' %}">
+                                        <img class="img-responsive advert--attachment" src="{{ path('symbio_webtools_thumbnail_ratio', {
+                                            'width': thumbWidth,
+                                            'height': thumbHeight,
+                                            'path': postHasImage.media|mediaPath
+                                        }) }}" alt="Photo">
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class=" box box-primary">
+                    <div class="box-body">
+                        {{ object.content|raw }}
+                    </div>
+                </div>
+           </div>
+        </div>
+    </div>
+{% endblock %}

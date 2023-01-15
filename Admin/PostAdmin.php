@@ -34,20 +34,9 @@ class PostAdmin extends BaseAdmin
     {
         parent::configureRoutes($collection);
 
-        $collection->remove('show');
         $collection->remove('export');
         $collection->remove('acl');
-    }
-
-    protected function configureShowFields(ShowMapper $showMapper)
-    {
-        $showMapper
-            ->add('publishInternally')
-            ->add('publishOnWeb')
-            ->add('title')
-            ->add('perex')
-            ->add('content', null, array('safe' => true))
-        ;
+        $collection->remove('history');
     }
 
     /**
@@ -168,6 +157,10 @@ class PostAdmin extends BaseAdmin
                 )
             ))
         ;
+    }
+
+    protected function configureShowFields(ShowMapper $showMapper)
+    {
     }
 
     /**

@@ -11,7 +11,7 @@ use Sonata\ClassificationBundle\Model\CollectionInterface;
 
 /**
  * @ORM\Table(name="news")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Ok99\PrivateZoneCore\NewsBundle\Entity\PostRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class Post

@@ -8,6 +8,7 @@ services:
             - [setTranslationDomain, [%sonata.news.admin.post.translation_domain%]]
             - [setPermalinkGenerator, [@ok99.privatezone.news.permalink.generator]]
             - [setTemplate, [edit, Ok99PrivateZoneNewsBundle:Post:edit.html.twig]]
+            - [setTemplate, [show, Ok99PrivateZoneNewsBundle:Post:show.html.twig]]
 
     ok99.privatezone.news.admin.post_has_image:
         class: Ok99\PrivateZoneCore\NewsBundle\Admin\PostHasImageAdmin

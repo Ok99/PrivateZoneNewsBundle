@@ -14,8 +14,15 @@
     <div class="well well-small form-actions">
         {% block sonata_form_actions %}
             {% if admin.id(object) is not null %}
+                {% if pz_has_news_publishable_on_web and admin.id(object) is not null %}
+                    <a href="{{ ok99_site_news_uri ~ object.id }}-{{ object.slug }}?preview" class="btn btn-info persist-preview" target="_blank">
+                        <i class="fa fa-eye"></i>
+                        Náhled na webu
+                    </a>
+                {% endif %}
+
                 {% if admin.id(object) is not null %}
-                    <a href="#" class="btn btn-info persist-preview">
+                    <a href="{{ path('admin_privatezonecore_news_post_show', { 'id': object.id }) }}" class="btn btn-info persist-preview" target="_blank">
                         <i class="fa fa-eye"></i>
                         {{ 'btn_preview'|trans({}, 'SonataAdminBundle') }}
                     </a>
