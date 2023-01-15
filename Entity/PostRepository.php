@@ -13,7 +13,7 @@ class PostRepository extends BasePostRepository
         return $this->createQueryBuilder('post')
             ->select('post, createdBy')
             ->leftJoin('post.createdBy', 'createdBy')
-            ->where('post.publishInternally = :publishInternally')->setParameter('publishInternally', true)
+            ->andWhere('post.publishInternally = :publishInternally')->setParameter('publishInternally', true)
             ->andWhere('post.publishDate <= :now')->setParameter('now', new \DateTime())
             ->addOrderBy('post.publishDate', 'DESC')
             ->addOrderBy('post.createdAt', 'DESC')
