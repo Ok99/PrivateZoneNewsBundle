@@ -235,6 +235,14 @@ Rychlé odkazy na moderování
                 <source>form.label_comments_default_status</source>
                 <target>Výchozí stav komentáře</target>
             </trans-unit>
+            <trans-unit id="form_label_stay_on_top">
+                <source>form.label_stay_on_top</source>
+                <target>Vždy na vrchu</target>
+            </trans-unit>
+            <trans-unit id="Stay On Top">
+                <source>Stay On Top</source>
+                <target>Vždy na vrchu</target>
+            </trans-unit>
             <trans-unit id="filter_label_title">
                 <source>filter.label_title</source>
                 <target>Název</target>
@@ -445,7 +453,7 @@ Rychlé odkazy na moderování
             </trans-unit>
             <trans-unit id="Files">
                 <source>Files</source>
-                <target>Soubory</target>
+                <target>Přílohy</target>
             </trans-unit>
             <trans-unit id="Enabled">
                 <source>Enabled</source>

@@ -62,6 +62,11 @@ class Post
     protected $publishDate;
 
     /**
+     * @ORM\Column(name="stay_on_top", type="boolean")
+     */
+    protected $stayOnTop = false;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime")
      * @Gedmo\Timestampable(on="create")
      */
@@ -284,6 +289,25 @@ class Post
     public function getPublishDate()
     {
         return $this->publishDate;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getStayOnTop()
+    {
+        return $this->stayOnTop;
+    }
+
+    /**
+     * @param boolean $stayOnTop
+     * @return Post
+     */
+    public function setStayOnTop($stayOnTop)
+    {
+        $this->stayOnTop = $stayOnTop;
+
+        return $this;
     }
 
     /**
