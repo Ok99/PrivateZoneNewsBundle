@@ -20,10 +20,6 @@ class PostAdminController extends SecuredCRUDController
      */
     protected function solveResponseIfNotObjectOwner($id, Request $request, $object, $action)
     {
-        if (!$this->admin->isAdmin($object) && !$this->isUserValid($object)) {
-            return $this->redirect($this->generateUrl('admin_privatezonecore_news_post_list'));
-        }
-
         return $this->doAction($action, $id, $request);
     }
 

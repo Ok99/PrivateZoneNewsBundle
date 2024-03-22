@@ -251,6 +251,13 @@ class PostAdmin extends BaseAdmin
      */
     public function isGranted($name, $object = null)
     {
+        if (
+            is_string($name) &&
+            in_array(strtoupper($name), ['SHOW', 'VIEW'])
+        ) {
+            return true;
+        }
+
         $isAdmin = false;
 
         switch($name) {
