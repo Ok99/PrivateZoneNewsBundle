@@ -17,15 +17,52 @@
                 <div class="box box-primary">
                     <div class="box-body">
                         <p class="text-muted text-center">{{ object.perex }}</p>
-                        {% if object.image %}
-                            <a data-fancybox="post_{{ object.id }}" href="{% path object.image, 'reference' %}">
-                                <img class="img-responsive advert--attachment" src="{{ path('symbio_webtools_thumbnail_ratio', {
-                                    'width': 400,
-                                    'height': 600,
-                                    'path': object.image|mediaPath
-                                }) }}" alt="Photo">
-                            </a><br/>
+                        {% if object.image is not null or object.postHasImages|length > 0 %}
+                            <div class="advert--attachments margin-bottom">
+                                {% set mainImage = object.image ? object.image : object.postHasImages[0].media %}
+                                {% set mainThumbWidth = not mainImage.width or mainImage.height > mainImage.width ? 10000 : 1280 %}
+                                {% set MainThumbHeight = not mainImage.width or mainImage.height > mainImage.width ? 960 : 10000 %}
+                                <a class="advert--hero_attachment" data-fancybox="advert_{{ object.id }}" href="{% path mainImage, 'reference' %}">
+                                    <img src="{{ path('symbio_webtools_thumbnail_ratio', { 'width': mainThumbWidth, 'height': MainThumbHeight, 'path': mainImage|mediaPath }) }}" alt="">
+                                </a>
+                                {% if object.postHasImages|length > 0 and (object.image or object.postHasImages|length > 1) %}
+                                    <div class="advert--attachments-side">
+                                        {% set maxCountImagesInGallery = object.image is not null ? 4 : 5 %}
+                                        {% for postHasImage in object.postHasImages %}
+                                            {% set image = postHasImage.media %}
+                                            {% if object.image or loop.index > 1 %}
+                                                {% set thumbWidth = not image.width or image.height > image.width ? 10000 : 400 %}
+                                                {% set thumbHeight = not image.width or image.height > image.width ? 400 : 10000 %}
+
+                                                {% if loop.index < maxCountImagesInGallery %}
+                                                    <a data-fancybox="advert_{{ object.id }}" href="{% path image, 'reference' %}">
+                                                        <img src="{{ path('symbio_webtools_thumbnail_ratio', { 'width': thumbWidth, 'height': thumbHeight, 'path': image|mediaPath }) }}" alt="Photo">
+                                                    </a>
+                                                {% elseif loop.index == maxCountImagesInGallery %}
+                                                    <a data-fancybox="advert_{{ object.id }}" href="{% path image, 'reference' %}" class="thumb thumb--more">
+                                                        <img src="{{ path('symbio_webtools_thumbnail_ratio', { 'width': thumbWidth, 'height': thumbHeight, 'path': image|mediaPath }) }}" alt="Photo">
+
+                                                        {% if loop.length > maxCountImagesInGallery %}
+                                                            <div class="thumb-overlay">
+                                                                <div class="thumb-overlay-inner">
+                                                                    <div class="count">+{{ loop.length - maxCountImagesInGallery }}</div>
+                                                                    <div class="text">Zobrazit galerii</div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+                                                    </a>
+                                                {% elseif loop.index > maxCountImagesInGallery %}
+                                                    <a style="display: none;" data-fancybox="advert_{{ object.id }}" href="{% path image, 'reference' %}">
+                                                        <img src="{{ path('symbio_webtools_thumbnail_ratio', { 'width': thumbWidth, 'height': thumbHeight, 'path': image|mediaPath }) }}" alt="Photo">
+                                                    </a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
                         {% endif %}
+
                         <ul class="list-group list-group-unbordered">
                             <li class="list-group-item">
                                 <b><i class="fa fa-calendar margin-r-5"></i> Datum</b>
@@ -44,22 +81,6 @@
                                 {% endfor %}
                             {% endif %}
                         </ul>
-                        {% if object.postHasImages|length > 0 %}
-                            {% for postHasImage in object.postHasImages %}
-                                {% set thumbWidth = not postHasImage.media.width or postHasImage.media.height > postHasImage.media.width ? 10000 : 200 %}
-                                {% set thumbHeight = not postHasImage.media.width or postHasImage.media.height > postHasImage.media.width ? 200 : 10000 %}
-
-                                <div class="col-sm-6 margin-bottom advert--attachment_wrapper">
-                                    <a data-fancybox="post_{{ object.id }}" href="{% path postHasImage.media, 'reference' %}">
-                                        <img class="img-responsive advert--attachment" src="{{ path('symbio_webtools_thumbnail_ratio', {
-                                            'width': thumbWidth,
-                                            'height': thumbHeight,
-                                            'path': postHasImage.media|mediaPath
-                                        }) }}" alt="Photo">
-                                    </a>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
                     </div>
                 </div>
             </div>
